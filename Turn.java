@@ -8,8 +8,8 @@ import java.util.List;
 
 public class Turn {
 
-    String currentTurnColour;
-    String startingPlayerColour;
+    private String currentTurnColour;
+    private String startingPlayerColour;
 
     public String getCurrentTurnColour() {
         return this.currentTurnColour;

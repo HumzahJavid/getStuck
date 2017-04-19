@@ -8,16 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    
-    int numberOfDeals;
-    int numberOfMatches;
-    List<Player> players;
+
+    private int numberOfDeals;
+    private int numberOfMatches;
+    private List<Player> players;
 
     public Game() {
         this.numberOfDeals = 0;
         this.numberOfMatches = 0;
         this.players = null;
     }
+
     public int getNumberOfDeals() {
         return this.numberOfDeals;
     }
@@ -58,6 +59,12 @@ public class Game {
     }
 
     public void register(String name1, String col1, String name2, String col2) {
+        Player player1 = new Player(name1, col1, 1);
+        Player player2 = new Player(name2, col2, 2);
+        List<Player> players = new ArrayList();
+        players.add(player1);
+        players.add(player2);
+        this.setPlayers(players);
     }
 }//end game 
 

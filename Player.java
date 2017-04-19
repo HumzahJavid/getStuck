@@ -6,12 +6,21 @@ package getstuck;
  */
 public class Player {
 
-    String colour;
-    boolean isStuck;
-    boolean isWinner;
-    String name;
-    int number;
-    int score;
+    private String colour;
+    private boolean isStuck;
+    private boolean isWinner;
+    private String name;
+    private int number;
+    private int score;
+
+    public Player(String name, String colour, int number) {
+        this.setColour(colour);
+        this.setIsStuck(false);
+        this.setIsWinner(false);
+        this.setName(name);
+        this.setNumber(number);
+        this.setScore(0);
+    }
 
     public String getColour() {
         return this.colour;
@@ -48,7 +57,7 @@ public class Player {
     public void setIsWinner(boolean n) {
         this.isWinner = n;
     }
-    
+
     public void setName(String n) {
         this.name = n;
     }
@@ -59,7 +68,7 @@ public class Player {
 
     public void setScore(int n) {
         this.score = n;
-    }    
+    }
 
     public int calculateStuckPlayerScore() {
         int n = 0;
@@ -70,4 +79,10 @@ public class Player {
         int n = 0;
         return n;
     }
+
+    @Override
+    public String toString() {
+        return "Name: "+ this.getName() + ", Colour: " + this.getColour() + ", Number: " + this.getNumber();
+    }
+
 }//end player

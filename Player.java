@@ -1,9 +1,13 @@
 package getstuck;
+//Lines 96, 99; 127 and 130 have been left commented out for the scoring to be verified more easily
 
 /**
  *
  * @author humzah
  */
+import java.util.List;
+import java.util.ArrayList;
+
 public class Player {
 
     private String colour;
@@ -70,19 +74,71 @@ public class Player {
         this.score = n;
     }
 
-    public int calculateStuckPlayerScore() {
-        int n = 0;
-        return n;
+    public int calculateStuckPlayerScore(List<List<Card>> cards) {
+        int oldScore = this.getScore();
+        int newScore = 0;
+        int currentScore = 0;
+        List<Card> stuckCards = new ArrayList<Card>();
+        String stuckColour = this.getColour();
+
+        for (List<Card> row : cards) {
+            for (Card card : row) {
+                if (card.getColour().equalsIgnoreCase(stuckColour)) {
+                    stuckCards.add(card);
+                }
+            }
+        }
+        //collects all the face up cards which match the stuck players colour 
+
+        for (Card card : stuckCards) {
+            if (card instanceof NumeralCard) {
+                currentScore += card.getValue().getNumericValue();
+                //System.out.println(card + " score " + card.getValue().getNumericValue());
+            } else {
+                currentScore -= 10;
+                //System.out.println(card + " score - 10 ");
+            }
+        }
+
+        newScore = currentScore + oldScore;
+        this.setScore(newScore);
+        return newScore;
     }
 
-    public int calculateUnstuckPlayerScore() {
-        int n = 0;
-        return n;
+    public int calculateUnstuckPlayerScore(List<List<Card>> cards) {
+        int oldScore = this.getScore();
+        int newScore = 0;
+        int currentScore = 0;
+        List<Card> unstuckCards = new ArrayList<Card>();
+        String unstuckColour = this.getColour();
+
+        for (List<Card> row : cards) {
+            for (Card card : row) {
+                if (card.getColour().equalsIgnoreCase(unstuckColour)) {
+                    unstuckCards.add(card);
+                }
+            }
+        }
+        //collects all the face up cards which match the unstuck players colour 
+
+        for (Card card : unstuckCards) {
+            if (card instanceof NumeralCard) {
+                currentScore += card.getValue().getNumericValue();
+                //System.out.println(card + " score " + card.getValue().getNumericValue());
+            } else {
+                currentScore += 10;
+               // System.out.println(card + " score 10 ");
+            }
+        }
+
+        newScore = currentScore + oldScore;
+        this.setScore(newScore);
+        return newScore;
     }
 
     @Override
     public String toString() {
-        return "Name: "+ this.getName() + ", Colour: " + this.getColour() + ", Number: " + this.getNumber();
+        return "Name: " + this.getName() + ", Colour: " + this.getColour() + ", Number: " + this.getNumber() + ", isStuck: " + this.getIsStuck() + ", isWinner: " + this.getIsWinner() + ", score: " + this.getScore();
     }
 
 }//end player

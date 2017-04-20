@@ -37,16 +37,29 @@ public class Card {
         this.isFaceDown = false;
         this.value = value;
         this.suit = suit;
+        if ((this.getSuit() == Card.Suit.CLUBS) || (this.getSuit() == Card.Suit.SPADES)) {
+            this.colour = "Black";
+        } else {
+            this.colour = "Red";
+        }
     }
-    
+
+    public String getColour() {
+        return this.colour;
+    }
+
+    public void setColour(String colour) {
+        this.colour = colour;
+    }
+
     public boolean getIsFaceDown() {
         return this.isFaceDown;
     }
-    
+
     public void setIsFaceDown(boolean bool) {
         this.isFaceDown = bool;
     }
-    
+
     public Suit getSuit() {
         return suit;
     }
@@ -75,6 +88,25 @@ public class Card {
                 } else {
                     return "[" + this.getValue().getNumericValue() + " " + this.getSuit().toString().substring(0, 1) + "]";
                 }
+            } else {
+                //face down 
+                return "[XXX]";
+            }
+
+        } else {
+            //gap card 
+            return "[---]";
+        }
+    }
+
+    public String toString(boolean bool) {
+        if ((this.getValue() != null) && (this.getSuit() != null)) {
+            //if card is not a gap card
+
+            if (this.isFaceDown == false) {
+                //if this card is face up
+
+                return "[" + this.getValue() + "(" + this.getValue().numericValue + ") of " + this.getSuit() + " Facedown: " + this.getIsFaceDown() + " Colour: " + this.getColour() + "]";
             } else {
                 //face down 
                 return "[XXX]";

@@ -1,10 +1,14 @@
 package getstuck;
+//remove line 255 grid.stuckGrid(), made for testing purposes. 
+//Implement line 85 grid.checkOrientaion()  and line 88 grid.getCardsInPath
+//should be v.similar to game.checkForStuckPlayer()
 
 /**
  *
  * @author humzah
  */
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Grid {
@@ -65,6 +69,19 @@ public class Grid {
         return deck;
     }
 
+    private List<Card> createColours(List<Card> cards) {
+
+        for (Card card : cards) {
+            if ((card.getSuit() == card.suit.CLUBS) || (card.getSuit() == card.suit.SPADES)) {
+                card.colour = "Black";
+            } else {
+                card.colour = "Red";
+            }
+        }
+
+        return cards;
+    }
+
     public void checkOrientation(Card selectedCard) {
     }
 
@@ -72,29 +89,115 @@ public class Grid {
         return null;
     }
 
-    public List<Card> getDiagonalCards(String colour, Card card) {
-        return null;
+    public List<List<Card>> getDiagonalCards(String colour, Card card) {
+        //reverse each inner diagonal list at the end 
+        List<List<Card>> dCards = new ArrayList<List<Card>>(4);
+        for (int i = 0; i < 4; i++) {
+            dCards.add(new ArrayList<Card>());
+        }
+
+        int[] locationOfGap = this.getLocationOfCard(card);
+
+        //for cards on top left
+        int cardX = locationOfGap[0] - 1;
+        int cardY = locationOfGap[1] - 1;
+
+        while (cardX > -1 && cardY > -1) {
+            dCards.get(0).add(this.getCards().get(cardY).get(cardX));
+            cardX -= 1;
+            cardY -= 1;
+
+        }
+
+        //for cards on top right
+        cardX = locationOfGap[0] + 1;
+        cardY = locationOfGap[1] - 1;
+
+        while (cardX < 7 && cardY > -1) {
+            dCards.get(1).add(this.getCards().get(cardY).get(cardX));
+            cardX += 1;
+            cardY -= 1;
+        }
+
+        //for cards on bottom left
+        cardX = locationOfGap[0] - 1;
+        cardY = locationOfGap[1] + 1;
+
+        while (cardX > -1 && cardY < 7) {
+            dCards.get(2).add(this.getCards().get(cardY).get(cardX));
+            cardX -= 1;
+            cardY += 1;
+        }
+
+        //for cards on bottom right
+        cardX = locationOfGap[0] + 1;
+        cardY = locationOfGap[1] + 1;
+
+        while (cardX < 7 && cardY < 7) {
+            dCards.get(3).add(this.getCards().get(cardY).get(cardX));
+            cardX += 1;
+            cardY += 1;
+        }
+        return dCards;
     }
 
     private int[] getLocationOfCard(Card card) {
         int[] location = new int[2];
+        //location[0] = x, location[1] = y (but conceptually the position of a card in the grid is y x)
 
         for (int i = 0; i < this.getSize(); i++) {
             int j = this.getCards().get(i).indexOf(card);
             if (j != -1) {
-                location[0] = i;
-                location[1] = j;
+                location[0] = j;
+                location[1] = i;
             }
         }
         return location;
     }
 
-    public List<Card> getHorizontalCards(String colour, Card card) {
-        return null;
+    public List<List<Card>> getHorizontalCards(String colour, Card card) {
+        List<List<Card>> hCards = new ArrayList<List<Card>>(2);
+        hCards.add(new ArrayList<Card>());
+        hCards.add(new ArrayList<Card>());
+
+        int[] locationOfGap = this.getLocationOfCard(card);
+
+        //for cards on left 
+        for (int i = 0; i < locationOfGap[0]; i++) {
+            hCards.get(0).add(this.getCards().get(locationOfGap[1]).get(i));
+        }
+
+        for (int i = 6; i > locationOfGap[0]; i--) {
+            hCards.get(1).add(this.getCards().get(locationOfGap[1]).get(i));
+        }
+
+        for (List<Card> innerList : hCards) {
+            Collections.reverse(innerList);
+        }
+        return hCards;
     }
 
-    public List<Card> getVerticalCards(String colour, Card card) {
-        return null;
+    public List<List<Card>> getVerticalCards(String colour, Card card) {
+        List<List<Card>> vCards = new ArrayList<List<Card>>(2);
+        vCards.add(new ArrayList<Card>());
+        vCards.add(new ArrayList<Card>());
+
+        int[] locationOfGap = this.getLocationOfCard(card);
+
+        //for cards on top
+        for (int i = 0; i < locationOfGap[1]; i++) {
+            vCards.get(0).add(this.getCards().get(i).get(locationOfGap[0]));
+        }
+
+        //for cards on bottom
+        for (int i = 6; i > locationOfGap[1]; i--) {
+            vCards.get(1).add(this.getCards().get(i).get(locationOfGap[0]));
+        }
+
+        for (List<Card> innerList : vCards) {
+            Collections.reverse(innerList);
+        }
+        return vCards;
     }
 
     private void fillGrid(List<Card> cards) {
@@ -125,8 +228,8 @@ public class Grid {
         int[] lCard = this.getLocationOfCard(selectedCard);
         int[] lGap = this.getLocationOfCard(gap);
 
-        this.getCards().get(lCard[0]).set(lCard[1], gap);
-        this.getCards().get(lGap[0]).set(lGap[1], selectedCard);
+        this.getCards().get(lCard[1]).set(lCard[0], gap);
+        this.getCards().get(lGap[1]).set(lGap[0], selectedCard);
         selectedCard.setIsFaceDown(true);
     }
 
@@ -142,10 +245,33 @@ public class Grid {
 
     public void setupGrid() {
         List<Card> deck = this.createDeck();
+        deck = this.createColours(deck);
         deck = this.removeCard(new ArrayList(), deck);
         deck.add((deck.size() / 2), new Card());
         //add gap card in center of deck
         this.fillGrid(deck);
+    }
+
+    public void stuckGrid() {
+        List<List<Card>> dCards = this.getDiagonalCards("Black", this.getGap());
+        List<List<Card>> hCards = this.getHorizontalCards("Black", this.getGap());
+        List<List<Card>> vCards = this.getVerticalCards("Black", this.getGap());
+
+        for (List<Card> list : dCards) {
+            for (Card card : list) {
+                card.setIsFaceDown(true);
+            }
+        }
+        for (List<Card> list : hCards) {
+            for (Card card : list) {
+                card.setIsFaceDown(true);
+            }
+        }
+        for (List<Card> list : vCards) {
+            for (Card card : list) {
+                card.setIsFaceDown(true);
+            }
+        }
     }
 
     @Override

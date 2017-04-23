@@ -98,23 +98,4 @@ public class Card {
             return "[---]";
         }
     }
-
-    public String toString(boolean bool) {
-        if ((this.getValue() != null) && (this.getSuit() != null)) {
-            //if card is not a gap card
-
-            if (this.isFaceDown == false) {
-                //if this card is face up
-
-                return "[" + this.getValue() + "(" + this.getValue().numericValue + ") of " + this.getSuit() + " Facedown: " + this.getIsFaceDown() + " Colour: " + this.getColour() + "]";
-            } else {
-                //face down 
-                return "[XXX]";
-            }
-
-        } else {
-            //gap card 
-            return "[---]";
-        }
-    }
 }//end card class 

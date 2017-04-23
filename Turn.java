@@ -31,23 +31,4 @@ public class Turn {
     public void setStartingPlayerColour(String n) {
         this.startingPlayerColour = n;
     }
-
-    public boolean isValidMove(List<Card> cards) {
-        if (!cards.isEmpty()) {
-            //if this list is not empty 
-
-            if (cards.get(0).isFaceDown == false) {
-                return true;
-            } else {
-                for (Card currentCard : cards) {
-                    if ((currentCard instanceof CourtCard) && (currentCard.isFaceDown == false)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
 }//end turn

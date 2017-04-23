@@ -1,5 +1,4 @@
 package getstuck;
-//remove line 60 call to stuck grid
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +38,7 @@ public class GetStuck {
             while ((!player1.getIsStuck()) && (!player2.getIsStuck())) {
                 //no players are stuck
                 System.out.println(grid);
-                playerIsStuck = game.checkForStuckPlayer(grid, turn);
+                playerIsStuck = game.checkForStuckPlayer(grid);
                 if (playerIsStuck) {
                     currentPlayer.setIsStuck(true);
                     System.out.println("current player is stuck " + currentPlayer.getName());
@@ -74,7 +73,6 @@ public class GetStuck {
                         currentPlayer = player1;
                     }
                     turn.setCurrentTurnColour(currentPlayer.getColour());
-                    //grid.stuckGrid();
                 }
             }
             game.calculateScore();
@@ -141,9 +139,5 @@ public class GetStuck {
         turn = new Turn(p1Colour);
         game.register(p1Name, p1Colour, p2Name, p2Colour);
         return turn;
-    }
-
-    public static void reset() {
-
     }
 }

@@ -1,7 +1,4 @@
 package getstuck;
-//remove line 255 grid.stuckGrid(), made for testing purposes. 
-//Implement line 85 grid.checkOrientaion()  and line 88 grid.getCardsInPath
-//should be v.similar to game.checkForStuckPlayer()
 
 /**
  *
@@ -12,9 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Grid {
-
     private List<List<Card>> cards;
-    //private List<Card> cards;
     private Card gap;
     private int size;
 
@@ -83,10 +78,133 @@ public class Grid {
     }
 
     public void checkOrientation(Card selectedCard) {
+        String colour = selectedCard.getColour();
+        String orientation = "";
+        String lowestValidMove = "";
+        List<Card> cardsToRemove = new ArrayList();
+
+        boolean horizontal = false;
+        boolean vertical = false;
+        boolean diagonal = false;
+
+        boolean validHorizontalMove = false;
+        boolean validVerticalMove = false;
+        boolean validDiagonalMove = false;
+
+        List<List<Card>> hCards;
+        List<List<Card>> vCards;
+        List<List<Card>> dCards;
+
+        List<Card> fullPath = new ArrayList();
+
+        hCards = this.getHorizontalCards("", this.getGap());
+        vCards = this.getVerticalCards("", this.getGap());
+        dCards = this.getDiagonalCards("", this.getGap());
+
+        for (List<Card> innerList : hCards) {
+            if (innerList.contains(selectedCard)) {
+                horizontal = true;
+                fullPath = innerList;
+            }
+            for (Card card : innerList) {
+                if (!card.getColour().equalsIgnoreCase(colour)) {
+                    if (card.isFaceDown) {
+                    } else {
+                        cardsToRemove.add(card);
+                    }
+                }
+            }
+            innerList.removeAll(cardsToRemove);
+        }
+
+        for (List<Card> innerList : vCards) {
+            if (innerList.contains(selectedCard)) {
+                vertical = true;
+                fullPath = innerList;
+            }
+            for (Card card : innerList) {
+                if (!card.getColour().equalsIgnoreCase(colour)) {
+                    if (card.isFaceDown) {
+                    } else {
+                        cardsToRemove.add(card);
+                    }
+                }
+            }
+            innerList.removeAll(cardsToRemove);
+        }
+
+        for (List<Card> innerList : dCards) {
+            if (innerList.contains(selectedCard)) {
+                diagonal = true;
+                fullPath = innerList;
+            }
+            for (Card card : innerList) {
+                if (!card.getColour().equalsIgnoreCase(colour)) {
+                    if (card.isFaceDown) {
+                    } else {
+                        cardsToRemove.add(card);
+                    }
+                }
+            }
+            innerList.removeAll(cardsToRemove);
+        }
+
+        for (List<Card> innerList : hCards) {
+            if (this.isValidMove(innerList)) {
+                validHorizontalMove = true;
+            }
+        }
+
+        for (List<Card> innerList : vCards) {
+            if (this.isValidMove(innerList)) {
+                validVerticalMove = true;
+            }
+        }
+
+        for (List<Card> innerList : dCards) {
+            if (this.isValidMove(innerList)) {
+                validDiagonalMove = true;
+            }
+        }
+
+        if (validHorizontalMove || validVerticalMove) {
+            lowestValidMove = "orthagonal";
+        } else if (validDiagonalMove) {
+            lowestValidMove = "diagonal";
+        } else {
+            lowestValidMove = "invalid";
+            System.out.println("This card cannot be moved, it is not orthagonally or diagonally inline with gap");
+        }
+
+        if (diagonal) {
+            orientation = "diagonal";
+        } else if (vertical || horizontal) {
+            orientation = "orthagonal";
+        } else {
+            //if the card is not aligned with the gap, orthagonally or diagonally 
+            //then player cannot select this card/dont move card
+            System.out.println("The selected card is not orthagonally or diagonally in line with the gap");
+            orientation = "invalid";
+        }
+
+        System.out.println("---------------------------------------------------------");
+        if (orientation.equals(lowestValidMove)) {
+            this.getCardsInPath(selectedCard, this.getGap(), fullPath);
+        } else {
+            System.out.println("The move cannot be made as your card " + selectedCard + " is "
+                    + orientation + "ly in line with the gap but it is possible to make a " + lowestValidMove + " move");
+        }
     }
 
-    public List<Card> getCardsInPath(Card selectedCard, Card gap) {
-        return null;
+    public List<Card> getCardsInPath(Card selectedCard, Card gap, List<Card> fullPath) {
+        List<Card> innerPath = new ArrayList();
+        innerPath = fullPath.subList(0, (fullPath.indexOf(selectedCard) + 1));
+        if (this.isValidMove(fullPath)) {
+            this.moveCard(selectedCard, gap);
+        } else {
+            System.out.println("This is not a valid move please select another card");
+        }
+        return innerPath;
     }
 
     public List<List<Card>> getDiagonalCards(String colour, Card card) {
@@ -167,6 +285,7 @@ public class Grid {
             hCards.get(0).add(this.getCards().get(locationOfGap[1]).get(i));
         }
 
+        //for cards on right
         for (int i = 6; i > locationOfGap[0]; i--) {
             hCards.get(1).add(this.getCards().get(locationOfGap[1]).get(i));
         }
@@ -216,11 +335,30 @@ public class Grid {
         this.setGap(grid.get(3).get(3));
     }
 
+    public boolean isValidMove(List<Card> cards) {
+        if (!cards.isEmpty()) {
+            //if this list is not empty 
+
+            if (cards.get(0).isFaceDown == false) {
+                return true;
+            } else {
+                for (Card currentCard : cards) {
+                    if ((currentCard instanceof CourtCard) && (currentCard.isFaceDown == false)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     public void moveCard(Card selectedCard) {
         if (selectedCard.getIsFaceDown() == true) {
             System.out.println("Cannot move a face down card, please choose a new Card");
         } else {
-            moveCard(selectedCard, this.getGap());
+            this.checkOrientation(selectedCard);
         }
     }
 
@@ -246,32 +384,11 @@ public class Grid {
     public void setupGrid() {
         List<Card> deck = this.createDeck();
         deck = this.createColours(deck);
+        Collections.shuffle(deck);
         deck = this.removeCard(new ArrayList(), deck);
         deck.add((deck.size() / 2), new Card());
         //add gap card in center of deck
         this.fillGrid(deck);
-    }
-
-    public void stuckGrid() {
-        List<List<Card>> dCards = this.getDiagonalCards("Black", this.getGap());
-        List<List<Card>> hCards = this.getHorizontalCards("Black", this.getGap());
-        List<List<Card>> vCards = this.getVerticalCards("Black", this.getGap());
-
-        for (List<Card> list : dCards) {
-            for (Card card : list) {
-                card.setIsFaceDown(true);
-            }
-        }
-        for (List<Card> list : hCards) {
-            for (Card card : list) {
-                card.setIsFaceDown(true);
-            }
-        }
-        for (List<Card> list : vCards) {
-            for (Card card : list) {
-                card.setIsFaceDown(true);
-            }
-        }
     }
 
     @Override

@@ -9,10 +9,10 @@ import java.util.List;
 
 public class Game {
 
+    private Grid grid;
     private int numberOfDeals;
     private int numberOfMatches;
     private List<Player> players;
-    private Grid grid;
 
     public Game() {
         this.numberOfDeals = 1;
@@ -112,18 +112,19 @@ public class Game {
         System.out.println(unstuckPlayer);
     }
 
-    public boolean checkForStuckPlayer(Grid grid, Turn turn) {
+    public boolean checkForStuckPlayer(Grid grid, Player player) {
+        String colour = player.getColour();
         boolean validHorizontalMove;
         boolean validVerticalMove;
         boolean validDiagonalMove;
-        List<List<Card>> hCards = grid.getHorizontalCards("Black", grid.getGap());
-        List<List<Card>> vCards = grid.getVerticalCards("Black", grid.getGap());
-        List<List<Card>> dCards = grid.getDiagonalCards("Black", grid.getGap());
+        List<List<Card>> hCards = grid.getHorizontalCards(colour, grid.getGap());
+        List<List<Card>> vCards = grid.getVerticalCards(colour, grid.getGap());
+        List<List<Card>> dCards = grid.getDiagonalCards(colour, grid.getGap());
 
-        validHorizontalMove = (turn.isValidMove(hCards.get(0)) || turn.isValidMove(hCards.get(1)));
-        validVerticalMove = (turn.isValidMove((vCards.get(0))) || turn.isValidMove(vCards.get(1)));
-        validDiagonalMove = (turn.isValidMove(dCards.get(0)) || turn.isValidMove(dCards.get(1))
-                || turn.isValidMove(dCards.get(2)) || turn.isValidMove(dCards.get(3)));
+        validHorizontalMove = (grid.isValidMove(hCards.get(0)) || grid.isValidMove(hCards.get(1)));
+        validVerticalMove = (grid.isValidMove((vCards.get(0))) || grid.isValidMove(vCards.get(1)));
+        validDiagonalMove = (grid.isValidMove(dCards.get(0)) || grid.isValidMove(dCards.get(1))
+                || grid.isValidMove(dCards.get(2)) || grid.isValidMove(dCards.get(3)));
 
         if (validHorizontalMove) {
             return false;
